@@ -829,62 +829,6 @@
             flex-wrap: wrap;
         }
 
-        .contact-card-box {
-            background: #1E293B;
-            border-radius: 16px;
-            padding: 3.5rem 2rem;
-            color: #E2E8F0;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-            max-width: 800px;
-            margin: 0 auto;
-            text-align: center;
-            border: 1px solid #334155;
-        }
-
-        .contact-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-top: 2.5rem;
-        }
-
-        .contact-method {
-            background: #0F172A;
-            padding: 2rem;
-            border-radius: 12px;
-            border: 1px solid #334155;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            color: inherit;
-            display: block;
-        }
-
-        .contact-method:hover {
-            border-color: var(--primary-cyan);
-            transform: translateY(-4px);
-            box-shadow: 0 10px 25px rgba(79, 209, 197, 0.1);
-        }
-
-        .contact-icon {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-            display: block;
-        }
-
-        .contact-method h4 {
-            font-family: 'Syne', sans-serif;
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--bg-white);
-            margin-bottom: 0.5rem;
-        }
-
-        .contact-method p {
-            color: #94A3B8;
-            font-size: 0.95rem;
-            word-break: break-all;
-        }
-
         /* Universal Footer System Elements */
         footer {
             background: #0B0F19;
@@ -1020,7 +964,6 @@
             }
         }
 
-
         @media (max-width: 640px) {
             .hero-section {
                 padding: 120px 1rem 60px;
@@ -1117,8 +1060,6 @@
                 <li><a href="#calculation">Engine</a></li>
                 <li><a href="#architecture">Architecture</a></li>
                 <li><a href="#platform-access">Access</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
             </ul>
             <a href="https://scoreflow-weld.vercel.app" class="btn btn-primary header-button">Launch Platform</a>
         </div>
@@ -1386,35 +1327,6 @@
             </div>
         </div>
     </section>
-    <section class="section-light-alt" id="contact">
-        <div class="section-container">
-            <div class="section-header">
-                <h2 class="section-title">Let's Connect</h2>
-                <p class="section-subtitle">Have questions about ScoreFlow, want to collaborate on open-source
-                    initiatives, or need production deployment insights? Reach out anytime.</p>
-            </div>
-
-            <div class="contact-card-box">
-                <span class="open-source-badge"
-                    style="background: rgba(79, 209, 197, 0.15); color: var(--primary-cyan);">Get In Touch</span>
-
-                <div class="contact-grid">
-                    <a href="mailto:gabionguillermo@gmail.com" class="contact-method">
-                        <span class="contact-icon">✉️</span>
-                        <h4>Email Me</h4>
-                        <p>gabionguillermo@gmail.com</p>
-                    </a>
-
-                    <a href="https://web.facebook.com/GuillermoGabion7117" target="_blank" rel="noopener noreferrer"
-                        class="contact-method">
-                        <span class="contact-icon">🌐</span>
-                        <h4>Facebook</h4>
-                        <p>fb.com/GuillermoGabion7117</p>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <footer>
         <div class="footer-content">
@@ -1431,7 +1343,6 @@
         const container = document.getElementById('devices-container');
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
         const navMenu = document.getElementById('nav-menu');
-        const navLinks = document.querySelectorAll('.nav-links a');
 
         // Mobile Menu Interactions Setup
         mobileMenuBtn.addEventListener('click', () => {
@@ -1439,7 +1350,7 @@
         });
 
         // Close menu on navigation click
-        navLinks.forEach(link => {
+        document.querySelectorAll('.nav-links a').forEach(link => {
             link.addEventListener('click', () => {
                 navMenu.classList.remove('active');
             });
@@ -1474,56 +1385,22 @@
         function scaleDevicesToShowcase() {
             const wrapperWidth = scaler.offsetWidth;
             const originalWidth = 950;
+            const originalHeight = 534;
 
-            // Only run programmatic matrix resize calculations above standard breakpoint grids
-            if (window.innerWidth > 768) {
-                if (wrapperWidth < originalWidth) {
-                    const scaleTarget = wrapperWidth / originalWidth;
-                    container.style.transform = `scale(${scaleTarget})`;
-                    scaler.style.height = `${534 * scaleTarget}px`;
-                } else {
-                    container.style.transform = 'none';
-                    scaler.style.height = '534px';
-                }
+            // Enforce scaling at all dimensions to kill the trailing dead space margins on mobile viewports
+            if (wrapperWidth < originalWidth) {
+                const scaleTarget = wrapperWidth / originalWidth;
+                container.style.transform = `scale(${scaleTarget})`;
+                container.style.transformOrigin = 'center top';
+                scaler.style.height = `${originalHeight * scaleTarget}px`;
             } else {
-                // Let native CSS structural breakpoints handle standard downscaling
                 container.style.transform = 'none';
-                scaler.style.height = 'auto';
+                scaler.style.height = `${originalHeight}px`;
             }
         }
 
         window.addEventListener('resize', scaleDevicesToShowcase);
         window.addEventListener('DOMContentLoaded', scaleDevicesToShowcase);
-
-        // --- NEW: SCROLL SPY TRACKING VIA INTERSECTION OBSERVER ---
-        // Select all structural section targets that map directly to nav anchor tags
-        const sections = document.querySelectorAll('section[id]');
-
-        const observerOptions = {
-            root: null, // Tracks visibility relative to the browser viewport
-            rootMargin: '-30% 0px -60% 0px', // Triggers state changes when a section occupies the core viewport zone
-            threshold: 0
-        };
-
-        const observerCallback = (entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const id = entry.target.getAttribute('id');
-
-                    // Cycle through all anchor tags to update class mappings cleanly
-                    navLinks.forEach(link => {
-                        if (link.getAttribute('href') === `#${id}`) {
-                            link.classList.add('active');
-                        } else {
-                            link.classList.remove('active');
-                        }
-                    });
-                }
-            });
-        };
-
-        const observer = new IntersectionObserver(observerCallback, observerOptions);
-        sections.forEach(section => observer.observe(section));
     </script>
 </body>
 
