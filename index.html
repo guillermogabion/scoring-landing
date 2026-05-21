@@ -1343,6 +1343,7 @@
         const container = document.getElementById('devices-container');
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
         const navMenu = document.getElementById('nav-menu');
+        const navLinks = document.querySelectorAll('.nav-links a');
 
         // Mobile Menu Interactions Setup
         mobileMenuBtn.addEventListener('click', () => {
@@ -1350,7 +1351,7 @@
         });
 
         // Close menu on navigation click
-        document.querySelectorAll('.nav-links a').forEach(link => {
+        navLinks.forEach(link => {
             link.addEventListener('click', () => {
                 navMenu.classList.remove('active');
             });
@@ -1385,22 +1386,56 @@
         function scaleDevicesToShowcase() {
             const wrapperWidth = scaler.offsetWidth;
             const originalWidth = 950;
-            const originalHeight = 534;
 
-            // Enforce scaling at all dimensions to kill the trailing dead space margins on mobile viewports
-            if (wrapperWidth < originalWidth) {
-                const scaleTarget = wrapperWidth / originalWidth;
-                container.style.transform = `scale(${scaleTarget})`;
-                container.style.transformOrigin = 'center top';
-                scaler.style.height = `${originalHeight * scaleTarget}px`;
+            // Only run programmatic matrix resize calculations above standard breakpoint grids
+            if (window.innerWidth > 768) {
+                if (wrapperWidth < originalWidth) {
+                    const scaleTarget = wrapperWidth / originalWidth;
+                    container.style.transform = `scale(${scaleTarget})`;
+                    scaler.style.height = `${534 * scaleTarget}px`;
+                } else {
+                    container.style.transform = 'none';
+                    scaler.style.height = '534px';
+                }
             } else {
+                // Let native CSS structural breakpoints handle standard downscaling
                 container.style.transform = 'none';
-                scaler.style.height = `${originalHeight}px`;
+                scaler.style.height = 'auto';
             }
         }
 
         window.addEventListener('resize', scaleDevicesToShowcase);
         window.addEventListener('DOMContentLoaded', scaleDevicesToShowcase);
+
+        // --- NEW: SCROLL SPY TRACKING VIA INTERSECTION OBSERVER ---
+        // Select all structural section targets that map directly to nav anchor tags
+        const sections = document.querySelectorAll('section[id]');
+
+        const observerOptions = {
+            root: null, // Tracks visibility relative to the browser viewport
+            rootMargin: '-30% 0px -60% 0px', // Triggers state changes when a section occupies the core viewport zone
+            threshold: 0
+        };
+
+        const observerCallback = (entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.getAttribute('id');
+
+                    // Cycle through all anchor tags to update class mappings cleanly
+                    navLinks.forEach(link => {
+                        if (link.getAttribute('href') === `#${id}`) {
+                            link.classList.add('active');
+                        } else {
+                            link.classList.remove('active');
+                        }
+                    });
+                }
+            });
+        };
+
+        const observer = new IntersectionObserver(observerCallback, observerOptions);
+        sections.forEach(section => observer.observe(section));
     </script>
 </body>
 
